@@ -1,4 +1,4 @@
-name: Run Django Tests
+name: Run Tests On Push
 on:
   push:
     branches: [master]
