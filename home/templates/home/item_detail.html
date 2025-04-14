@@ -1,0 +1,90 @@
+{% extends '_base.html' %}
+{% load static %}
+
+{% block content %}
+  <main class="main">
+    <!-- Page Title -->
+    <div class="page-title">
+      <div class="container d-lg-flex justify-content-between align-items-center">
+        <h1 class="mb-2 mb-lg-0">{{item.title}}</h1>
+        <nav class="breadcrumbs">
+          <ol>
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li class="current">{{item.title}}</li>
+          </ol>
+        </nav>
+      </div>
+    </div><!-- End Page Title -->
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8">
+          <!-- Blog Details Section -->
+          <section id="blog-details" class="blog-details section">
+            <div class="container">
+              <article class="article">
+                <div class="post-img">
+                  <img src="{% static 'blog' %}" alt="" class="img-fluid">
+                </div>
+                <h2 class="title">{{item.title}}</h2>
+                <div class="meta-top">
+                  <ul>
+                    <li class="d-flex align-items-center"><i class="bi bi-person"></i> <a href="{{item.get_absolute_url}}">{{item.by.username}}</a></li>
+                    <li class="d-flex align-items-center"><i class="bi bi-clock"></i> <a href="{{item.get_absolute_url}}"><time datetime="2020-01-01">{{item.time}}</time></a></li>
+                    <li class="d-flex align-items-center"><i class="bi bi-chat-dots"></i> <a href="{{item.get_absolute_url}}">{{item.comments.count}} Comments</a></li>
+                  </ul>
+                </div><!-- End meta top -->
+                <div class="content">
+                  {% if item.text %}
+                    {{item.text|safe}}
+                  {% else %}
+                    <a href="{{item.url}}">{{item.title}}</a>
+                  {% endif %}
+                </div><!-- End post content -->
+
+                <div class="meta-bottom">
+                  <i class="bi bi-folder"></i>
+                  <ul class="cats">
+                    <li><a href="#">{{item.type}}</a></li>
+                  </ul>
+
+                  <i class="bi bi-tags"></i>
+                  <ul class="tags">
+                    <li><a href="#">Creative</a></li>
+                    <li><a href="#">Tips</a></li>
+                    <li><a href="#">Marketing</a></li>
+                  </ul>
+                </div><!-- End meta bottom -->
+
+              </article>
+
+            </div>
+          </section><!-- /Blog Details Section -->
+
+          <!-- Blog Comments Section -->
+          <section id="blog-comments" class="blog-comments section">
+            <div class="container">
+              {% with comments=item.comments.all|slice:":8" %}
+              <h4 class="comments-count">{{comments|length}} Comments</h4>
+              {% for comment in comments %}
+                <div id="comment-{{comment.count}}" class="comment">
+                <div class="d-flex">
+                  <div class="comment-img"><img src="{% static comment_image %}" alt=""></div>
+                  <div>
+                    <h5><a href="">{{comment.by.username}}</a> <a href="#" class="reply"><i class="bi bi-reply-fill"></i> Reply</a></h5>
+                    <time datetime="2020-01-01">{{comment.time}}</time>
+                    <p>{{comment.text|safe}}</p>
+                  </div>
+                </div>
+              </div><!-- End comment #1 -->
+              {% endfor %}
+              {% endwith %}
+            </div>
+          </section><!-- /Blog Comments Section -->
+        </div>
+        <div class="col-lg-4 sidebar">
+          {% include 'home/side_bar.html' with author=item.user %}
+        </div>
+      </div>
+    </div>
+  </main>
+{% endblock %}

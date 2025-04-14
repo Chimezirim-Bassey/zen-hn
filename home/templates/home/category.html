@@ -1,0 +1,88 @@
+{% extends "_base.html" %}
+{% load static %}
+
+{% block content %}
+  <main class="main">
+    <!-- Page Title -->
+    <div class="page-title position-relative">
+      <div class="container d-lg-flex justify-content-between align-items-center">
+        <h1 class="mb-2 mb-lg-0">{{category}}</h1>
+        <nav class="breadcrumbs">
+          <ol>
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li class="current">{{category}}</li>
+          </ol>
+        </nav>
+      </div>
+    </div><!-- End Page Title -->
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8">
+          <!-- Blog Posts Section -->
+          <section id="blog-posts" class="blog-posts section">
+            <div class="container">
+              {% if page_obj %}
+                <div class="row gy-4">
+                  {% for obj in page_obj %}
+                  <!-- End post list item -->
+                    <div class="col-lg-6">
+                      <article class="position-relative h-100">
+                        <div class="post-img position-relative overflow-hidden">
+                          <img src="{% static blog %}" class="img-fluid" alt="">
+                          <span class="post-date">{{obj.time}}</span>
+                        </div>
+                        <div class="post-content d-flex flex-column">
+                          <h3 class="post-title"></h3>
+                          <div class="meta d-flex align-items-center">
+                            <div class="d-flex align-items-center">
+                              <i class="bi bi-person"></i> <span class="ps-2">{{obj.by.username}}</span>
+                            </div>
+                            <span class="px-3 text-black-50">/</span>
+                            <div class="d-flex align-items-center">
+                              <i class="bi bi-folder2"></i> <span class="ps-2">{{category}}</span>
+                            </div>
+                          </div>
+                          <p>{{obj.text|default:obj.title|truncatewords_html:100|safe}}</p>
+                          <hr>
+                          <a href="{{obj.get_absolute_url}}" class="readmore stretched-link"><span>Read More</span><i class="bi bi-arrow-right"></i></a>
+                        </div>
+                      </article>
+                    </div>
+                  <!-- End post list item -->
+                  {% endfor %}
+                </div>
+              {% endif %}
+            </div>
+          </section><!-- /Blog Posts Section -->
+
+          <!-- Blog Pagination Section -->
+          <section id="blog-pagination" class="blog-pagination section">
+            <div class="container">
+              <div class="d-flex justify-content-center">
+                {% if page_obj %}
+                  <ul>
+                    {% if page_obj.has_previous %}
+                      <li><a href="?page={{ page_obj.previous_page_number }}"><i class="bi bi-chevron-left"></i></a></li>
+                    {% endif %}
+                    {% for page in pages %}
+                      <li><a href="?page={{ page }}" class="active">{{page}}</a></li>
+                    {% endfor %}
+<!--                    <li><a href="#">10</a></li>-->
+                    {% if page_obj.has_next %}
+                      <li><a href="?page={{ page_obj.next_page_number }}"><i class="bi bi-chevron-right"></i></a></li>
+                    {% endif %}
+                  </ul>
+                {% endif %}
+              </div>
+            </div>
+          </section>
+          <!-- /Blog Pagination Section -->
+        </div>
+        <!-- Sidebar        -->
+        <div class="col-lg-4 sidebar">
+          {% include "home/side_bar.html" with author=star_user %}
+        </div>
+      </div>
+    </div>
+  </main>
+{% endblock content %}

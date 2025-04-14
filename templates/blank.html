@@ -1,0 +1,41 @@
+{% extends '_base.html' %}
+{% load crispy_forms_filters %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<main class="main">
+    <!-- Page Title -->
+    <div class="page-title">
+      <div class="container d-lg-flex justify-content-between align-items-center">
+        <h1 class="mb-2 mb-lg-0">{{title}}</h1>
+        <nav class="breadcrumbs">
+          <ol>
+            {% for crumb in breadcrumbs %}
+              <li><a href="{{crumb.url}}">{{crumb.name}}</a></li>
+            {% endfor %}
+            <li class="current">{{title}}</li>
+          </ol>
+        </nav>
+      </div>
+    </div><!-- End Page Title -->
+
+    <!-- Starter Section Section -->
+    <section id="starter-section" class="starter-section section">
+
+      <!-- Section Title -->
+      <div class="container section-title" data-aos="fade-up">
+        <div class="section-title-container d-flex align-items-center justify-content-between">
+<!--          <h2>{{title}}</h2>-->
+          <p>{{subtitle|default:""}}</p>
+        </div>
+      </div><!-- End Section Title -->
+
+      <div class="container" data-aos="fade-up">
+        {% block section_content %}
+        {% endblock section_content %}
+      </div>
+
+    </section><!-- /Starter Section Section -->
+
+  </main>
+{% endblock content %}

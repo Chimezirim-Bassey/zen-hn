@@ -1,0 +1,23 @@
+{% extends "blank.html" %}
+{% load static %}
+
+{% block section_content %}
+<div class="blog-author-widget-2 widget-item">
+    <div class="d-flex flex-column align-items-center">
+      <img src="{% static person %}" class="rounded-circle flex-shrink-0" alt="">
+      <h4>{{me.username}}
+        {% if user.is_authenticated and user.username == me.username %}
+          <span><a href="{% url 'user_update' %}" class="linkedin"><i class="bi bi-pencil small"></i></a></span>
+        {% endif %}
+      </h4>
+      <div class="social-links">
+        <a href="https://github.com/Ichinga-Samuel/" class="linkedin"><i class="bi bi-github"></i></a>
+        <a href="https://www.linkedin.com/in/samuel-ichinga-83541b110/" class="linkedin"><i class="bi bi-linkedin"></i></a>
+        <a href="https://medium.com/@ichingasamuel/" class="linkedin"><i class="bi bi-medium"></i></a>
+        <a href="https://x.com/IchingaSamuel" class="twitter"><i class="bi bi-twitter-x"></i></a>
+      </div>
+      <div>{{me|safe}}</div>
+    </div>
+  </div>
+<!--/Blog Author Widget 2 -->
+{% endblock section_content %}

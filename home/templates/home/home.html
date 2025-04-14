@@ -1,0 +1,366 @@
+{% extends "_base.html" %}
+{% load static %}
+{% block content %}
+<main class="main">
+  <!-- Latest Stories and Jobs-->
+  <section id="slider" class="slider section dark-background">
+    <div class="container" data-aos="fade-up" data-aos-delay="100">
+      <div class="swiper init-swiper">
+        <script type="application/json" class="swiper-config">
+          {
+              "loop": true,
+              "speed": 600,
+              "autoplay": {
+                "delay": 5000
+              },
+              "slidesPerView": "auto",
+              "centeredSlides": true,
+              "pagination": {
+                "el": ".swiper-pagination",
+                "type": "bullets",
+                "clickable": true
+              },
+              "navigation": {
+                "nextEl": ".swiper-button-next",
+                "prevEl": ".swiper-button-prev"
+              }
+          }
+        </script>
+        <div class="swiper-wrapper">
+          {% for item in slide_items %}
+            <div class="swiper-slide" style="background-image: url('{% static slide_image %}')">
+              <div class="content">
+                <h2><a href="{{ item.get_absolute_url }}">{{item.title}}</a></h2>
+                  <p>{{ item.title }}</p>
+              </div>
+            </div>
+          {% endfor %}
+          </div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-pagination"></div>
+        </div>
+    </div>
+  </section>
+  <!-- /Latest Stories and Jobs -->
+
+  <!-- Most Popular Stories and Jobs -->
+  <section id="trending-category" class="trending-category section">
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+        <div class="container" data-aos="fade-up">
+          <div class="row g-5">
+            <div class="col-lg-4">
+              {% if stories %}
+                {% with first_story=stories|first %}
+                  <div class="post-entry lg">
+                    <a href="{{first_story.get_absolute_url}}"><img src="{% static post_landscape %}" alt="" class="img-fluid"></a>
+                    <div class="post-meta"><span class="date">HN Stories</span> <span class="mx-1">•</span> <span>{{first_story.time}}</span></div>
+                    <h2><a href="{{first_story.get_absolute_url}}">{{first_story.title}}</a></h2>
+                    <p class="mb-4 d-block">{{first_story.text|default:first_story.title|truncatewords_html:50|safe}}</p>
+
+                    <div class="d-flex align-items-center author">
+                      <div class="photo"><img src="{% static person %}" alt="" class="img-fluid"></div>
+                      <div class="name">
+                        <h3 class="m-0 p-0">{{first_story.by.username}}</h3>
+                      </div>
+                    </div>
+                  </div>
+                {% endwith %}
+              {% endif %}
+            </div>
+            <div class="col-lg-8">
+              <div class="row g-5">
+                <div class="col-lg-4 border-start custom-border">
+                  {% for ask in ask_stories|slice:":3" %}
+                    <div class="post-entry">
+                      <a href="{{ask.get_absolute_url}}"><img src="{% static post_landscape %}" alt="" class="img-fluid"></a>
+                      <div class="post-meta"><span class="date">Ask</span> <span class="mx-1">•</span> <span>{{ask.time}}</span></div>
+                      <h2><a href="{{ask.get_absolute_url}}">{{ask.title}}</a></h2>
+                    </div>
+                  {% endfor %}
+                </div>
+                <div class="col-lg-4 border-start custom-border">
+                  {% for show in show_stories|slice:":3" %}
+                    <div class="post-entry">
+                      <a href="{{show.get_absolute_url}}"><img src="{% static post_landscape %}" alt="" class="img-fluid"></a>
+                      <div class="post-meta"><span class="date">Show</span> <span class="mx-1">•</span> <span>{{show.time}}</span></div>
+                      <h2><a href="{{show.get_absolute_url}}">{{show.title}}</a></h2>
+                    </div>
+                  {% endfor %}
+                </div>
+
+                <!-- Trending Section -->
+                <div class="col-lg-4">
+                  <div class="trending">
+                    <h3>Trending</h3>
+                    <ul class="trending-post">
+                      {% for story in stories|slice:"1:6" %}
+                        <li>
+                          <a href="{{story.get_absolute_url}}">
+                            <span class="number">{{story.counter}}</span>
+                            <h3>{{story.title}}</h3>
+                            <span class="author">{{story.by.username}}</span>
+                          </a>
+                        </li>
+                      {% endfor %}
+                    </ul>
+                  </div>
+                </div>
+                <!-- End Trending Section -->
+              </div>
+            </div>
+          </div> <!-- End .row -->
+        </div>
+      </div>
+  </section>
+  <!-- /Most Popular Stories and Jobs -->
+
+  <!-- Ask Stories -->
+  <section id="culture-category" class="culture-category section">
+      <!-- Ask Title -->
+      <div class="container section-title" data-aos="fade-up">
+        <div class="section-title-container d-flex align-items-center justify-content-between">
+          <h2>Ask Stories</h2>
+          <p><a href="{% url 'ask-stories' %}">See All Ask Stories</a></p>
+        </div>
+      </div>
+      <!-- End Ask Title -->
+      <!-- Ask Content -->
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+        {% if ask_stories %}
+          <div class="row">
+            {% with ask=ask_stories|slice:"3:4"|first %}
+              <div class="col-md-9">
+                <div class="d-lg-flex post-entry">
+                  <a href="{{ask.get_absolute_url}}" class="me-4 thumbnail mb-4 mb-lg-0 d-inline-block">
+                    <img src="{% static post_landscape %}" alt="" class="img-fluid">
+                  </a>
+                  <div>
+                    <div class="post-meta"><span class="date">Ask</span> <span class="mx-1">•</span> <span>{{ask.time}}</span></div>
+                    <h3><a href="{{ask.get_absolute_url}}">{{ask.title}}</a></h3>
+                    <p>{{ask.text|default:ask.title|truncatewords_html:50|safe}}</p>
+                    <div class="d-flex align-items-center author">
+                      <div class="photo"><img src="{% static person %}" alt="" class="img-fluid"></div>
+                      <div class="name">
+                        <h3 class="m-0 p-0">{{ask.by.username}}</h3>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              {% endwith %}
+              <div class="row">
+                <div class="col-lg-4">
+                  {% with ask=ask_stories|slice:"4:5"|first %}
+                  <div class="post-list border-bottom">
+                    <a href="{{ask.get_absolute_url}}"><img src="{% static post_landscape %}" alt="" class="img-fluid"></a>
+                    <div class="post-meta"><span class="date">Ask</span> <span class="mx-1">•</span> <span>{{ask.time}}</span></div>
+                    <h2 class="mb-2"><a href="{{ask.get_absolute_url}}">{{ask.title}}</a></h2>
+                    <span class="author mb-3 d-block">{{ask.by.username}}</span>
+                    <p class="mb-4 d-block">{{ask.text|default:ask.title|truncatewords_html:50|safe}}</p>
+                  {% endwith %}
+                  </div>
+
+                  {% with ask=ask_stories|slice:"5:6"|first %}
+                  <div class="post-list">
+                    <div class="post-meta"><span class="date">Ask</span> <span class="mx-1">•</span> <span>{{ask.time}}</span></div>
+                    <h2 class="mb-2"><a href="{{ask.get_absolute_url}}">{{ask.title}}</a></h2>
+                    <span class="author mb-3 d-block">{{ask.by.username}}</span>
+                  </div>
+                  {% endwith %}
+                </div>
+
+                {% with ask=ask_stories|slice:"6:7"|first %}
+                <div class="col-lg-8">
+                  <div class="post-list">
+                    <a href="{{ask.get_absolute_url}}"><img src="{% static post_landscap %}" alt="" class="img-fluid"></a>
+                    <div class="post-meta"><span class="date">Culture</span> <span class="mx-1">•</span> <span>{{ask.time}}</span></div>
+                    <h2 class="mb-2"><a href="{{ask.get_absolute_url}}">{{ask.title}}</a></h2>
+                    <span class="author mb-3 d-block">{{ask.by.username}}</span>
+                    <p class="mb-4 d-block">{{ask.text|default:ask.title|truncatewords_html:100|safe}}</p>
+                  </div>
+                </div>
+                {% endwith %}
+              </div>
+            </div>
+            <div class="col-md-3">
+              {% for ask in ask_stories|slice:"7:13" %}
+              <div class="post-list border-bottom">
+                <div class="post-meta"><span class="date">Ask</span> <span class="mx-1">•</span> <span>{{ask.time}}</span></div>
+                <h2 class="mb-2"><a href="{{ask.get_absolute_url}}">{{ask.title}}</a></h2>
+                <span class="author mb-3 d-block">{{ask.by.username}}</span>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+      </div>
+      <!-- End Ask Content -->
+  </section>
+  <!-- /Ask Stories -->
+
+    <!-- Show Stories -->
+  <section id="business-category" class="business-category section">
+      <!-- Section Title -->
+      <div class="container section-title" data-aos="fade-up">
+        <div class="section-title-container d-flex align-items-center justify-content-between">
+          <h2>Show</h2>
+          <p><a href="{% url 'show-stories' %}">See Show Stories</a></p>
+        </div>
+      </div>
+      <!-- End Section Title -->
+
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+        {% if show_stories %}
+          <div class="row">
+            <div class="col-md-9 order-md-2">
+              {% with show=show_stories|slice:"3:4"|first %}
+              <div class="d-lg-flex post-entry">
+                <a href="{{show.get_absolute_url}}" class="me-4 thumbnail d-inline-block mb-4 mb-lg-0">
+                  <img src="{% static post_landscape %}" alt="" class="img-fluid">
+                </a>
+                <div>
+                  <div class="post-meta"><span class="date">Show</span> <span class="mx-1">•</span><span>{{show.time}}</span></div>
+                  <h3><a href="{{show.get_absolute_url}}">{{show.title}}</a></h3>
+                  <p>{{show.text|default:show.title|truncatewords_html:100|safe}}</p>
+                  <div class="d-flex align-items-center author">
+                    <div class="photo"><img src="{% static person %}" alt="" class="img-fluid"></div>
+                    <div class="name">
+                      <h3 class="m-0 p-0">{{show.by.username}}</h3>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% endwith %}
+              <div class="row">
+                <div class="col-lg-4">
+                  {% with show=show_stories|slice:"4:5"|first %}
+                  <div class="post-list border-bottom">
+                    <a href="{{show.title}}"><img src="{% static post_landscape %}" alt="" class="img-fluid"></a>
+                    <div class="post-meta"><span class="date">Show</span> <span class="mx-1">•</span> <span>{{show.time}}</span></div>
+                    <h2 class="mb-2"><a href="{{show.get_absolute_url}}">{{show.title}}</a></h2>
+                    <span class="author mb-3 d-block">{{show.by.username}}</span>
+                    <p class="mb-4 d-block">{{show.text|default:show.title|truncatewords_html:50|safe}}</p>
+                  </div>
+                  {% endwith %}
+
+                  {% with show=show_stories|slice:"5:6"|first %}
+                  <div class="post-list">
+                    <div class="post-meta"><span class="date">Show</span> <span class="mx-1">•</span> <span>{{show.time}}</span></div>
+                    <h2 class="mb-2"><a href="{{show.get_absolute_url}}">{{show.title}}</a></h2>
+                    <span class="author mb-3 d-block">{{show.by.username}}</span>
+                  </div>
+                  {% endwith %}
+                </div>
+                <div class="col-lg-8">
+                  {% with show=show_stories|slice:"6:7"|first %}
+                  <div class="post-list">
+                    <a href="{{show.get_absolute_url}}"><img src="{% static post_landscape %}" alt="" class="img-fluid"></a>
+                    <div class="post-meta"><span class="date">Show</span> <span class="mx-1">•</span> <span>Jul 5th '22</span></div>
+                    <h2 class="mb-2"><a href="{{show.get_absolute_url}}">{{show.title}}</a></h2>
+                    <span class="author mb-3 d-block">{{show.by.username}}</span>
+                    <p class="mb-4 d-block">{{show.text|default:show.title|truncatewords_html:50|safe}}</p>
+                  </div>
+                  {% endwith %}
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-3">
+              {% for show in show_stories|slice:"7:13" %}
+              <div class="post-list border-bottom">
+                <div class="post-meta"><span class="date">Show</span> <span class="mx-1">•</span> <span>{{show.time}}</span></div>
+                <h2 class="mb-2"><a href="{{show.get_absolute_url}}">{{show.title}}</a></h2>
+                <span class="author mb-3 d-block">{{show.by.username}}</span>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    </section>
+  <!-- /Show Section -->
+
+    <!-- Job Stories -->
+  <section id="lifestyle-category" class="lifestyle-category section">
+      <!-- Section Title -->
+      <div class="container section-title" data-aos="fade-up">
+        <div class="section-title-container d-flex align-items-center justify-content-between">
+          <h2>Jobs</h2>
+          <p><a href="{% url 'jobs' %}">See All Jobs</a></p>
+        </div>
+      </div><!-- End Section Title -->
+
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+        {% if jobs %}
+          <div class="row g-5">
+            <div class="col-lg-4">
+              {% with job=jobs|slice:"3:4"|first %}
+              <div class="post-list lg">
+                <a href="{{job.get_absolute_url}}"><img src="{% static post_landscape %}" alt="" class="img-fluid"></a>
+                <div class="post-meta"><span class="date">Job</span> <span class="mx-1">•</span> <span>{{job.time}}</span></div>
+                <h2><a href="{{job.get_absolute_url}}">{{job.title}}</a></h2>
+                <p class="mb-4 d-block">{{job.text|default:job.title|truncatewords_html:50|safe}}</p>
+
+                <div class="d-flex align-items-center author">
+                  <div class="photo"><img src="{% static person %}" alt="" class="img-fluid"></div>
+                  <div class="name">
+                    <h3 class="m-0 p-0">{{job.by.username}}</h3>
+                  </div>
+                </div>
+              </div>
+              {% endwith %}
+
+              <div class="post-list border-bottom">
+                {% with job=jobs|slice:"4:5"|first %}
+                <div class="post-meta"><span class="date">Job</span> <span class="mx-1">•</span> <span>{{job.time}}</span></div>
+                <h2 class="mb-2"><a href="{{job.get_absolute_url}}">{{job.title}}</a></h2>
+                <span class="author mb-3 d-block">{{job.by.username}}</span>
+                {% endwith %}
+              </div>
+              <div class="post-list">
+                {% with job=jobs|slice:"5:6"|first %}
+                <div class="post-meta"><span class="date">Job</span> <span class="mx-1">•</span><span>{{job.time}}</span></div>
+                <h2 class="mb-2"><a href="{{job.get_absolute_url}}">{{job.title}}</a></h2>
+                <span class="author mb-3 d-block">{{job.by.username}}</span>
+              </div>
+              {% endwith %}
+            </div>
+
+            <div class="col-lg-8">
+              <div class="row g-5">
+                <div class="col-lg-4 border-start custom-border">
+                  {% for job in jobs|slice:"6:9" %}
+                  <div class="post-list">
+                    <a href="job.get_absolute_url"><img src="{% static post_landscape %}" alt="" class="img-fluid"></a>
+                    <div class="post-meta"><span class="date">Job</span> <span class="mx-1">•</span> <span>{{job.time}}</span></div>
+                    <h2><a href="{{job.get_absolute_url}}">{{job.title}}</a></h2>
+                  </div>
+                  {% endfor %}
+                </div>
+                <div class="col-lg-4 border-start custom-border">
+                  {% for job in jobs|slice:"9:12" %}
+                  <div class="post-list">
+                    <a href="{{job.get_absolute_url}}"><img src="{% static post_landscape %}" alt="" class="img-fluid"></a>
+                    <div class="post-meta"><span class="date">Job</span> <span class="mx-1">•</span> <span>{{job.time}}</span></div>
+                    <h2><a href="{{job.get_absolute_url}}">{{job.title}}</a></h2>
+                  </div>
+                  {% endfor %}
+                </div>
+                <div class="col-lg-4">
+                  {% for job in jobs|slice:"12:18" %}
+                  <div class="post-list border-bottom">
+                    <div class="post-meta"><span class="date">Job</span> <span class="mx-1">•</span> <span>{{job.time}}</span></div>
+                    <h2 class="mb-2"><a href="{{job.get_absolute_url}}">{{job.title}}</a></h2>
+                    <span class="author mb-3 d-block">{{job.by.username}}</span>
+                  </div>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </section>
+  <!-- /Jobs -->
+</main>
+{% endblock content %}

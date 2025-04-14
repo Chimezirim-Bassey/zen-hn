@@ -1,0 +1,58 @@
+name: zen-hn
+
+services:
+  web:
+    build: .
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB_HOST: db
+      REDIS_HOST: redis
+      EMAIL_BACKEND: user_account.email_backend.CeleryEmailBackend
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - local_storage:/web/zen_hn
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+    container_name: web
+
+  db:
+    image: postgres
+    env_file:
+      - .env
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    container_name: db
+    restart: always
+
+  celery_worker:
+    build:
+      context: .
+    env_file:
+      - .env
+    environment:
+      REDIS_HOST: redis
+    command: python -m celery -A zen_hn worker --loglevel=info
+    volumes:
+      - local_storage:/web/zen_hn
+    depends_on:
+      - web
+      - redis
+    container_name: celery_worker
+    restart: always
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    volumes:
+      - local_storage:/cache/redis
+    restart: always
+
+volumes:
+  local_storage:
+    name: local_storage
+  db_data:
+    name: db_data

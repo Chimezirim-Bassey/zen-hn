@@ -1,0 +1,67 @@
+{% load static %}
+<div class="widgets-container">
+
+  <!-- Blog Author Widget 2 -->
+  {% if author %}
+    <div class="blog-author-widget-2 widget-item">
+      <div class="d-flex flex-column align-items-center">
+        <img src="{% static person %}" class="rounded-circle flex-shrink-0" alt="">
+        <h4>{{author.username}}</h4>
+        <div class="social-links">
+          <a href="https://github.com/Ichinga-Samuel/" class="linkedin"><i class="bi bi-github"></i></a>
+          <a href="https://www.linkedin.com/in/samuel-ichinga-83541b110/" class="linkedin"><i class="bi bi-linkedin"></i></a>
+          <a href="https://medium.com/@ichingasamuel/" class="linkedin"><i class="bi bi-medium"></i></a>
+          <a href="https://x.com/IchingaSamuel" class="twitter"><i class="bi bi-twitter-x"></i></a>
+        </div>
+        <p>{{author.about|truncatewords_html:200|safe}}</p>
+      </div>
+    </div>
+  {% endif %}
+  <!--/Blog Author Widget 2 -->
+
+  <!-- Search Widget -->
+  <div class="search-widget widget-item">
+    <h3 class="widget-title">Search</h3>
+    <form action="{{ url }}" method="get">
+      <input type="text" placeholder="" value="{{query|default:''}}" name="query">
+      <button type="submit" title="Search"><i class="bi bi-search"></i></button>
+    </form>
+    {% if query|default:None %}
+      {% for post in search_result %}
+        <div class="post-item">
+          <img src="{% static blog_recent %}" alt="" class="flex-shrink-0">
+          <div>
+            <h4><a href="{{post.get_absolute_url}}">{{post.title}}</a></h4>
+            <time datetime="2020-01-01">{{post.time}}</time>
+          </div>
+        </div>
+      {% endfor %}
+    {% endif %}
+  </div>
+  <!--/Search Widget -->
+
+  <!-- Recent Posts Widget -->
+  <div class="recent-posts-widget widget-item">
+    <h3 class="widget-title">Recent Posts</h3>
+    {% for post in recent %}
+    <div class="post-item">
+      <img src="{% static blog_recent %}" alt="" class="flex-shrink-0">
+      <div>
+        <h4><a href="{{post.get_absolute_url}}">{{post.title}}</a></h4>
+        <time datetime="2020-01-01">{{post.time}}</time>
+      </div>
+    </div>
+    {% endfor %}<!-- End recent post item-->
+  </div><!--/Recent Posts Widget -->
+
+  <!-- Tags Widget -->
+  <div class="tags-widget widget-item">
+    <h3 class="widget-title">Tags</h3>
+    <ul>
+      <li><a href="{% url 'ask-stories' %}">Ask HN</a></li>
+      <li><a href="{% url 'show-stories' %}">Show HN</a></li>
+      <li><a href="{% url 'stories' %}">Stories</a></li>
+      <li><a href="{% url 'jobs' %}">Job</a></li>
+    </ul>
+  </div><!--/Tags Widget -->
+</div>
