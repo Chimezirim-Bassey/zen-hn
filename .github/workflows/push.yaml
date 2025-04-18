@@ -7,7 +7,7 @@ jobs:
   push_to_repo:
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false
+      fail-fast: True
       matrix:
         python-version: ["3.11", "3.12", "3.13"]
 
@@ -21,8 +21,10 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Set up environment
+        env:
+          ENV_FILE: ${{ secrets.ENV_FILE }}
         run: |
-          echo ${{ secrets.ENV_FILE }} | base64 --decode > .env          
+          echo $ENV_FILE | base64 --decode > .env          
 
       - name: Install dependencies
         run: |
