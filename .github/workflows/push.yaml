@@ -4,10 +4,10 @@ on:
     branches: [master]
 env:
   test: check
-  tt: ${{ vars.MAN }}
 
 jobs:
   push_to_repo:
+    environment: push
     runs-on: ubuntu-latest
     strategy:
       fail-fast: True
@@ -32,7 +32,6 @@ jobs:
           echo $wtf 
           echo $ENV_FILE
           echo $test
-          echo $tt
 
       - name: Check Env
         run: echo $ENV_FILE
