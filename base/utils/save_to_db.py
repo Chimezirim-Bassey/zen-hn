@@ -18,21 +18,21 @@ async def save_item(*, item: dict):
         if time := item.get('time'):
             item['time'] = datetime.fromtimestamp(time, get_current_timezone())
 
-        with transaction.atomic():
-            if item['type'] == 'story':
-                await save_story(story=item)
+        # with transaction.atomic():
+        if item['type'] == 'story':
+            await save_story(story=item)
 
-            elif item['type'] == 'comment':
-                await save_comment(comment=item)
+        elif item['type'] == 'comment':
+            await save_comment(comment=item)
 
-            elif item['type'] == 'job':
-                await save_job(job=item)
+        elif item['type'] == 'job':
+            await save_job(job=item)
 
-            elif item['type'] == 'poll':
-                await save_poll(poll=item)
+        elif item['type'] == 'poll':
+            await save_poll(poll=item)
 
-            elif item['type'] == 'pollopt':
-                await save_poll_option(poll_option=item)
+        elif item['type'] == 'pollopt':
+            await save_poll_option(poll_option=item)
     except Exception as err:
         logger.error("%s: Error in creating an item", err)
 
@@ -111,17 +111,17 @@ async def save_poll_option(*, poll_option: dict):
 
 async def save_user(*, user: dict):
     try:
-        with transaction.atomic():
-            user_fields = ['id', 'karma', 'about', 'created']
-            user = {field: user[field] for field in user_fields if field in user}
-            user['username'] = username = user.pop('id')
-            user['email'] = f"{username}@zenhn.com"
-            if user.get("created"):
-                user["created"] = datetime.fromtimestamp(user["created"], tz=get_current_timezone())
-            user, created = await User.objects.aupdate_or_create(defaults={**user}, username=username, email=user['email'])
-            if created:
-                user.set_unusable_password()
-                await user.asave(update_fields=('password',))
-            return user
+        # with transaction.atomic():
+        user_fields = ['id', 'karma', 'about', 'created']
+        user = {field: user[field] for field in user_fields if field in user}
+        user['username'] = username = user.pop('id')
+        user['email'] = f"{username}@zenhn.com"
+        if user.get("created"):
+            user["created"] = datetime.fromtimestamp(user["created"], tz=get_current_timezone())
+        user, created = await User.objects.aupdate_or_create(defaults={**user}, username=username, email=user['email'])
+        if created:
+            user.set_unusable_password()
+            await user.asave(update_fields=('password',))
+        return user
     except Exception as err:
         logger.error("%s: Error in creating a user", err)
