@@ -22,7 +22,7 @@ jobs:
 
       - name: Set up environment
         run: |
-          echo ${{ push.ENV_FILE }} | base64 --decode > .env          
+          echo ${{ secrets.ENV_FILE }} | base64 --decode > .env          
 
       - name: Install dependencies
         run: |
