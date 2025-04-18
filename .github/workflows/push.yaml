@@ -24,7 +24,7 @@ jobs:
         env:
           ENV_FILE: ${{ secrets.ENV_FILE }}
         run: |
-          echo $ENV_FILE | base64 --decode > .env 
+          echo $ENV_FILE | base64 --decode > .env && cat .env
 
       - name: Check Env
         run: echo $ENV_FILE
