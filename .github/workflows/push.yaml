@@ -23,8 +23,11 @@ jobs:
       - name: Set up environment
         env:
           ENV_FILE: ${{ secrets.ENV_FILE }}
+          wtf: ${{ vars.wtf }}
         run: |
           echo $ENV_FILE | base64 --decode > .env && cat .env
+          echo $wtf 
+          ech $ENV_FILE
 
       - name: Check Env
         run: echo $ENV_FILE
