@@ -4,6 +4,7 @@ on:
     branches: [master]
 env:
   test: check
+  tt: ${{ vars.MAN }}
 
 jobs:
   push_to_repo:
@@ -31,6 +32,7 @@ jobs:
           echo $wtf 
           echo $ENV_FILE
           echo $test
+          echo $tt
 
       - name: Check Env
         run: echo $ENV_FILE
