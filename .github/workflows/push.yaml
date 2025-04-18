@@ -7,7 +7,7 @@ env:
 
 jobs:
   push_to_repo:
-    environment: push
+    environment: development
     runs-on: ubuntu-latest
     strategy:
       fail-fast: True
@@ -25,20 +25,13 @@ jobs:
 
       - name: Set up environment
         env:
-          ENV_FILE: ${{ secrets.ENV_FILE }}
-          wtf: ${{ vars.WTF }}
+          ENV_FILE: ${{ vars.ENV_FILE }}
         run: |
-          echo $ENV_FILE | base64 --decode > .env && cat .env
-          echo $wtf 
-          echo $ENV_FILE
-          echo $test
-
-      - name: Check Env
-        run: echo $ENV_FILE
+          echo $ENV_FILE | base64 --decode > .env
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Run Django test
-        run: echo hi
+        run: python manage.py test
