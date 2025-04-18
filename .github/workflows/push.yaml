@@ -2,6 +2,8 @@ name: Run Tests On Push
 on:
   push:
     branches: [master]
+env:
+  test: check
 
 jobs:
   push_to_repo:
@@ -28,6 +30,7 @@ jobs:
           echo $ENV_FILE | base64 --decode > .env && cat .env
           echo $wtf 
           echo $ENV_FILE
+          echo $test
 
       - name: Check Env
         run: echo $ENV_FILE
