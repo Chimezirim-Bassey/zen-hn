@@ -27,20 +27,21 @@ environ.Env.read_env(BASE_DIR / ".env")
 SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env("DEBUG")
+DEBUG = env.bool("DEBUG")
 
-ALLOWED_HOSTS = ["*"]
-
+ALLOWED_HOSTS = env.get_value("ALLOWED_HOSTS", default="*").split(" ")
 
 # Application definition
 
 INSTALLED_APPS = [
+    "whitenoise.runserver_nostatic", # add for serving static files in development
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
+    # "whitenoise.runserver_nostatic", # add for serving static files in development
+    "django.contrib.staticfiles",
     "django.contrib.sites", # add to use django-allauth
 
     # third-party apps
@@ -65,7 +66,10 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    # add for caching, runs during the response cycle must come after the other middlewares that might modify the response headers
+    "django.middleware.cache.UpdateCacheMiddleware",
     'django.middleware.security.SecurityMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware", # add for serving static files in production
     'django.contrib.sessions.middleware.SessionMiddleware',
     "corsheaders.middleware.CorsMiddleware",
     'django.middleware.common.CommonMiddleware',
@@ -75,15 +79,78 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # "django.contrib.sites.middleware.CurrentSiteMiddleware" # add for site framework
+
+    # add for caching, runs during request and must come after the other middlewares that might modify the request headers
+    "django.middleware.cache.FetchFromCacheMiddleware",
 ]
 
 CORS_ALLOWED_ORIGINS = (
     "http://localhost:8000",
+    "http://localhost:8002",
 )
 
 CSRF_TRUSTED_ORIGINS = (
     "http://localhost:8000",
+    "http://localhost:8002",
 )
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{levelname} {asctime} {module} {message}",
+            "style": "{",
+        },
+        "simple": {
+            "format": "{levelname} {message}",
+            "style": "{",
+        },
+    },
+
+    "filters":{
+        # "special": {
+        #     "()": "project.logging.SpecialFilter", # a custom filter
+        #     "param": "value", # a custom parameter
+        # },
+        "require_debug_true": {
+            "()": "django.utils.log.RequireDebugTrue",
+        }
+    },
+
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "filters": ["require_debug_true"],
+            "level": "INFO",
+            "formatter": "simple",
+        },
+        "mail_admins": {
+            "level": "ERROR",
+            "class": "django.utils.log.AdminEmailHandler",
+            "filters": ["require_debug_true"],
+        },
+        "file":{
+            "level": "DEBUG",
+            "class": "logging.FileHandler",
+            "filename": BASE_DIR / "logs" / "django.log",
+            "formatter": "verbose",
+            "filters": ["require_debug_true"],
+        }
+    },
+
+    "loggers": {
+        "django": {
+            "handlers": ["console", "file"],
+            "propagate": True,
+        },
+        "django.request": {
+            "handlers": ["mail_admins", "file"],
+            "level": "ERROR",
+            "propagate": True,
+        },
+    }
+}
 
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
@@ -92,8 +159,8 @@ REST_FRAMEWORK = {
     ],
     # add this to enable authentication with dj-rest-auth and rest_framework
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.SessionAuthentication",
         "rest_framework.authentication.TokenAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
         # "rest_framework.authentication.BasicAuthentication",
     ],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema", # add for OpenAPI schema
@@ -118,9 +185,48 @@ TEMPLATES = [
     },
 ]
 
+CACHE_ENGINES = {
+    "pymemcache":{ # install memcache in your system
+        "BACKEND": "django.core.cache.backends.memcached.PyMemcacheCache",
+        "LOCATION": "127.0.0.1:11211", # memcached server can be a list of servers
+        "OPTIONS": {
+            "allow_unicode_keys": True, # allow unicode keys
+            "default_noreply": False,
+            # "serde": pymemcache.serde.pickle_serde
+        }
+    },
+
+    "dummy": {
+        "BACKEND": "django.core.cache.backends.dummy.DummyCache",
+    },
+
+    "local":{
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+    },
+
+    "redis":{
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": f"redis://{env('REDIS_HOST')}:{env('REDIS_PORT')}/0", # redis server
+        "OPTIONS": {
+            # "SERIALIZER": "django_redis.serializers.json.JSONSerializer",
+            # "SERIALIZER": "django_redis.serializers.pickle.PickleSerializer",
+            # "SERIALIZER": "django_redis.serializers.msgpack.MsgPackSerializer",
+            # "SERIALIZER": "django_redis.serializers.yaml.YamlSerializer",
+        }
+    }
+}
+
+CACHES = {
+    "default": CACHE_ENGINES[env.get_value("CACHE_ENGINE", default="pymemcache")],
+}
+
+CACHE_MIDDLEWARE_KEY_PREFIX = ""
+CACHE_MIDDLEWARE_SECONDS = 120
+CACHE_MIDDLEWARE_ALIAS = "default"
+
 WSGI_APPLICATION = 'zen_hn.wsgi.application'
 
-
+WHITENOISE_AUTOREFRESH = True
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
@@ -139,7 +245,7 @@ DATABASE_ENGINES = {
 }
 
 DATABASES = {
-    'default': DATABASE_ENGINES[env('CURRENT_DATABASE_ENGINE')],
+    'default': DATABASE_ENGINES[env('DATABASE_ENGINE')],
 }
 
 # OpenAPI schema settings
@@ -184,10 +290,34 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
+# Static Files
+# storage engines
+
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        # "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage"
+        # "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    }
+}
+
+# STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage" # deprecated
 # url to access static files
 STATIC_URL = 'static/'
-STATICFILES_DIRS = [BASE_DIR / 'static'] # for static files
-STATIC_ROOT = BASE_DIR / "staticfiles" # for collectstatic command to collect all static files in one directory
+# for static files
+STATICFILES_DIRS = [
+    BASE_DIR / 'static'
+]
+STATIC_ROOT = BASE_DIR / "staticfiles" # for collect static command to collect all static files in one directory
+STATICFILES_FINDERS = [
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+    # looks for static files in the default storagefinder
+    # "django.contrib.staticfiles.finders.DefaultStorageFinder"
+]
 # crispy
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
@@ -201,7 +331,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Custom user model
 AUTH_USER_MODEL = "user_account.User"
 
-SITE_ID = 1
+SITE_ID = 2
 
 ACCOUNT_SESSION_REMEMBER = True # allauth setting to remember user session
 

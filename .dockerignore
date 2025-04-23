@@ -4,3 +4,7 @@
 .dockerignore
 Dockerfile
 compose.yml
+*.env
+nginx
+.github	
+*.sqlite3

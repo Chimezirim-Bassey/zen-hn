@@ -18,6 +18,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, re_path, include
+from django.views.static import serve
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -29,10 +30,12 @@ urlpatterns = [
     re_path("account(s)?/", include("allauth.urls"))
 ]
 
-# Serving media files in development
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-# Serving static files in development
-urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+# Serving media and static files in development
+if settings.DEBUG:
+    print(settings.DEBUG, 'DEBUG', type(settings.DEBUG))
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
 
 # django-allauth provides a set of URLs for authentication, registration, password reset, etc.
 # /accounts/login/ - account_login  - account/login.html
