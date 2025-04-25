@@ -86,12 +86,12 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = (
     "http://localhost:8000",
-    "http://localhost:8002",
+    "http://localhost:8001",
 )
 
 CSRF_TRUSTED_ORIGINS = (
     "http://localhost:8000",
-    "http://localhost:8002",
+    "http://localhost:8001",
 )
 
 LOGGING = {
@@ -202,6 +202,7 @@ CACHE_ENGINES = {
 
     "local":{
         "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "zen-store",
     },
 
     "redis":{
@@ -217,7 +218,7 @@ CACHE_ENGINES = {
 }
 
 CACHES = {
-    "default": CACHE_ENGINES[env.get_value("CACHE_ENGINE", default="pymemcache")],
+    "default": CACHE_ENGINES[env.get_value("CACHE_ENGINE", default="local")],
 }
 
 CACHE_MIDDLEWARE_KEY_PREFIX = ""
@@ -232,7 +233,7 @@ WHITENOISE_AUTOREFRESH = True
 
 DATABASE_ENGINES = {
     "sqlite3": {"ENGINE": "django.db.backends.sqlite3", "NAME": BASE_DIR / env("SQLITE3_DB_NAME")},
-    "postgresql":{
+    "postgres":{
         "ENGINE": "django.db.backends.postgresql",
         "NAME": env("POSTGRES_DB"),
         "USER": env("POSTGRES_USER"),

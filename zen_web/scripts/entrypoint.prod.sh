@@ -21,5 +21,5 @@ then
     echo "Running collectstatic..."
     python manage.py collectstatic --noinput
 fi
-
+# The “$@” symbol indicates that every argument we pass into the container will be appended to the executable.
 exec "$@"

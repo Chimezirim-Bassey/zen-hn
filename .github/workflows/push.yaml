@@ -25,14 +25,19 @@ jobs:
         env:
           ENV_FILE: ${{ vars.ENV_FILE }}
         run: |
+          cd zen_web
           echo $ENV_FILE | base64 --decode > .env
 
       - name: Install dependencies
         run: |
+          cd zen_web
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
       - name: Run Django test
         env:
           CURRENT_DATABASE_ENGINE: sqlite3
-        run: python manage.py test
+          CACHE_ENGINE: dummy
+        run: |
+          cd zen_web
+          python manage.py test
