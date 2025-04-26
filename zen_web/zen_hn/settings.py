@@ -133,7 +133,7 @@ LOGGING = {
         "file":{
             "level": "DEBUG",
             "class": "logging.FileHandler",
-            "filename": BASE_DIR / "logs" / "django.log",
+            "filename": "log",
             "formatter": "verbose",
             "filters": ["require_debug_true"],
         }
