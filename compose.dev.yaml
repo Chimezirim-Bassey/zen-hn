@@ -4,7 +4,7 @@ services:
   zen-web:
     build:
       context: ./zen_web
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile_dev
     env_file:
       - ./zen_web/.env
     environment:
@@ -12,15 +12,11 @@ services:
       REDIS_HOST: zen-redis
       CACHE_ENGINE: redis
       EMAIL_BACKEND: user_account.email_backend.CeleryEmailBackend
-      RUN_MIGRATIONS: 0
-      RUN_COLLECTSTATIC: 1
-      DEBUG: 0
-    command: gunicorn zen_hn.wsgi:application --bind 0.0.0.0:8000
+    command: python manage.py runserver 0.0.0.0:8000
     volumes:
-      - static_files:/home/super_hacker/zen_hn/staticfiles
-      - media_files:/home/super_hacker/zen_hn/media
-    expose:
-      - 8000
+      - ./zen_web:/home/super_hacker/zen_hn
+    ports:
+      - "8000:8000"
     depends_on:
       - zen-db
       - zen-redis
@@ -58,23 +54,7 @@ services:
       - redis_data:/data
     restart: always
 
-  zen-nginx:
-    image: nginx:latest
-    ports:
-      - "8000:80"
-    volumes:
-      - ./zen_nginx/default.conf:/etc/nginx/nginx.conf
-      - static_files:/home/super_hacker/zen_hn/staticfiles
-      - media_files:/home/super_hacker/zen_hn/media
-    depends_on:
-      - zen-web
-    container_name: zen-nginx
-
 volumes:
-  static_files:
-    name: static_files
-  media_files:
-    name: media_files
   db_data:
     name: db_data
   redis_data:

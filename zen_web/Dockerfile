@@ -54,7 +54,7 @@ ENV PYTHONUNBUFFERED=1
 EXPOSE 8000
 
 # Make entry file executable
-RUN chmod u+x  /home/$USERNAME/zen_hn/scripts/entrypoint.prod.sh
+RUN chmod u+x  /home/$USERNAME/zen_hn/scripts/entrypoint.sh
 
 # Start the application using Gunicorn
-ENTRYPOINT ["/home/super_hacker/zen_hn/scripts/entrypoint.prod.sh"]
+ENTRYPOINT ["/home/super_hacker/zen_hn/scripts/entrypoint.sh"]

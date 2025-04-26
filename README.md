@@ -2,6 +2,20 @@
 
 Django Fullstack Project with ZenBlog Bootstrap Template.
 
+## Features
+
+Microservices architecture with the following components:
+- Django Rest Framework
+- PostgreSQL
+- Redis
+- Celery
+- Nginx
+- Gunicorn
+- Docker
+- Docker Compose
+- Async Queue Manager
+- Hackernews API
+
 ## Commands
 
 Run the following commands to populate the database with data from hackernews api using the `async-queue-manager`
@@ -35,5 +49,5 @@ python manage.py update --timeout 600
 Run with docker compose
 
 ```bash
-docker compose up
+docker-compose up -d --build
 ```

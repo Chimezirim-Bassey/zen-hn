@@ -36,7 +36,7 @@ jobs:
 
       - name: Run Django test
         env:
-          CURRENT_DATABASE_ENGINE: sqlite3
+          DATABASE_ENGINE: sqlite3
           CACHE_ENGINE: dummy
         run: |
           cd zen_web
